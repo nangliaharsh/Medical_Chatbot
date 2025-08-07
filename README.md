@@ -29,112 +29,116 @@
 Transformers \& Sentence-Transformers: These are like specialized toolkits. One helps the bot chat naturally, and the other helps it understand the meaning and context of sentences, not just the words.
 
 
+Frontend Layer (The Face of the App)
 
-**Frontend (The Face of the App):**
+Location: frontend-react/
+Tech Stack: React.js + Styled Components
 
+Features:
+	•	Modern, real-time chat interface
+	•	Sidebar with medical information and emergency alerts
+	•	Connection status indicator (“Connected” / “Disconnected”)
+	•	AI-generated dynamic suggestions
+	•	Quick symptom selection buttons
+	•	Markdown support for formatted answers
+	•	Session persistence using localStorage
+	•	Fully responsive and mobile-first design
 
+To View the App:
+Open your browser at http://localhost:3000
 
-**Streamlit:** A tool that quickly builds the simple, clean webpage where users can actually chat with the bot.
+⸻
 
+Backend API Layer (The Engine Room)
 
-**How the Project Works ⚙️**
----
+Location: app/
+Tech Stack: Python + FastAPI + Uvicorn
 
+Main File: main.py
 
+Features:
+	•	RESTful API endpoints for chat interactions
+	•	CORS middleware for cross-origin communication
+	•	UUID-based session management
+	•	Health check endpoints
+	•	Request/response validation via Pydantic
 
-Imagine you're asking the bot a question. Here’s the step-by-step journey your message takes:
+⸻
 
+Service Layer (The Project Manager)
 
+Location: app/services/
+Main File: chat_service.py
 
-##### **Part 1: The Core Components**
+Responsibilities:
+	•	Message processing and routing
+	•	Maintaining conversation context across messages
+	•	Managing conversation history
+	•	Generating smart suggestions
+	•	Bridging frontend requests with AI model responses
 
+⸻
 
+Machine Learning Layer (The Brain)
 
--The Face (streamlit\_app.py): This is the chat window where you type your message. When you hit "Send," it packages up your message and sends it over to the FastAPI "traffic cop."
+Location: app/models/
+Core Technologies: PyTorch, Transformers, Sentence-Transformers
 
+Main File: chatbot_model.py
 
+Components:
+	•	The Detective
+Uses SentenceTransformer to interpret symptom descriptions and find the most relevant medical topic from the knowledge base.
+	•	The Conversationalist
+Uses GPT-2 to handle natural conversation, answer follow-up questions, greetings, and expand on a known topic intelligently.
 
--The Manager (chat\_service.py): This is the project's manager. It gets the message from FastAPI and keeps track of your entire conversation. Its most important job is to remember the context—if you were just talking about "gallstones," it holds onto that thought.
+⸻
 
+Knowledge Base (The Medical Library)
 
+Location: app/data/medical_data.py
+A structured file containing all relevant symptom information, causes, conditions, and medical definitions. The AI can only answer based on this data.
 
--The Brain (chatbot\_model.py): This is the real AI. The manager gives it your message and the conversation context. The brain has two key skills:
+⸻
 
+⚙️ How the Project Works
 
+⸻
 
--The Detective: It uses SentenceTransformer to read your symptoms and find the closest match in its medical library.
+🧠 Step-by-Step Workflow:
 
+⸻
 
+🔹 1. Initial Question:
 
--The Conversationalist: It uses GPT-2 to handle hellos, how-are-yous, and to answer specific questions about a topic.
+You type: “I have sharp pain in my upper right abdomen”
 
+	•	React frontend captures the message and sends it to the FastAPI backend.
+	•	FastAPI passes the message to the Chat Service.
+	•	Since it’s the first message, there’s no context.
+	•	The Chatbot Model is invoked. It uses the Detective (SentenceTransformer) to find the closest matching medical topic — say, “gallstones.”
+	•	A brief summary about gallstones is generated and returned.
+	•	Context is saved as “gallstones” for the session.
+	•	Response is shown in the React UI.
 
+⸻
 
--The Library (medical\_data.py): This is the bot's entire medical knowledge. It’s a single file where all the information about symptoms, causes, and conditions is written down. The "Detective" can only find information that exists in this library.
+🔹 2. Follow-up Question:
 
+You type: “What causes it?”
 
-
-##### **Part 2: The Workflow in Action**
-
-Let's say you have two questions: one about symptoms and a follow-up.
-
-
-
-Question 1: "I have sharp pain in my upper right abdomen"
-
-
-
-You type this into the Streamlit web page.
-
-
-
-Streamlit sends it to the FastAPI backend.
-
-
-
-The Chat Service (the manager) receives it. Since there's no previous context, it asks the Chatbot Model (the brain) for a fresh analysis.
-
-
-
-The brain's "Detective" skill reads the sentence, converts it to numbers (embeddings), and finds that "gallstones" is the closest match in its Medical Data library.
-
-
-
-The brain generates a summary about gallstones and sends it back to the manager.
-
-
-
-The manager updates your conversation history and importantly, sets the context to "gallstones."
-
-
-
-The response is sent back to the Streamlit page for you to see.
-
-
-
-Question 2: "What causes it?"
-
-
-
-You type your follow-up into Streamlit.
-
-
-
--It goes through FastAPI to the Chat Service.
-
-
-
--This time, the manager tells the brain: "The user is asking 'What causes it?' and the context of our conversation   is 'gallstones'."
-
-
-
--The brain sees the context. Instead of using its "Detective" skill, it uses its "Conversationalist" skill. It looks up "gallstones" in its library, finds the causes section, and creates a direct answer.
-
-
-
--This specific, context-aware answer is sent back through the manager to your screen.
-
-
-
--By remembering the context, the bot avoids giving the same generic summary and instead answers your direct follow-up questions, making the conversation feel much more intelligent and natural.
+	•	React frontend sends the follow-up to the backend.
+	•	Chat Service now includes previous context: “gallstones”
+	•	It asks the Chatbot Model to answer specifically about gallstones.
+	•	The Conversationalist (GPT-2) retrieves causes of gallstones from the knowledge base.
+	•	A precise, context-aware answer is generated.
+	•	Displayed in the chat interface, continuing a natural flow.
+
+⸻
+
+✅ Why It Feels Smart
+	•	Remembers Context: Doesn’t repeat information unnecessarily.
+	•	Follows Up Intelligently: Understands pronouns like “it” in context.
+	•	Dual Intelligence: Combines semantic search (Detective) with natural dialogue (Conversationalist).
+	•	Frontend Power: Clean, modern interface enhances user experience.
 
